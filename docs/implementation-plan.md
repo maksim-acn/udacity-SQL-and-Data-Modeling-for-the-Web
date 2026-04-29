@@ -11,7 +11,7 @@ This implementation replaces the Fyyur starter project's mock data with a Postgr
 - Models live in `models.py`; `app.py` initializes `db` and `Flask-Migrate`.
 
 ## Application Behavior
-- `config.py` reads `DATABASE_URL` first and falls back to `postgresql://localhost:5432/fyyur`.
+- `config.py` loads `.env`, reads `DATABASE_URL` first when present, otherwise builds the SQLAlchemy URL from `POSTGRES_*` or `DB_POSTGRESDB_*` variables.
 - `/venues` queries venues from the database, groups them by city/state, and includes upcoming-show counts.
 - `/artists` lists database artists by id and name.
 - `/shows` joins shows with artists and venues and returns the existing show-card shape.
@@ -21,10 +21,12 @@ This implementation replaces the Fyyur starter project's mock data with a Postgr
 - Show creation validates the form and verifies referenced artist and venue ids before inserting.
 
 ## Migration And Setup
-- `requirements.txt` includes `Flask-Migrate` and `psycopg2-binary`.
+- `requirements.txt` includes `Flask-Migrate`, `psycopg2-binary`, and `python-dotenv`.
 - `migrations/` contains a single initial Alembic revision that creates artists, venues, shows, genres, and genre association tables.
-- Expected local setup:
-  - Create a PostgreSQL database named `fyyur`, or set `DATABASE_URL`.
+- Expected local-network setup:
+  - Keep real credentials in an untracked `.env` file.
+  - Set `POSTGRES_DB=udacity` or `DB_POSTGRESDB_DATABASE=udacity`.
+  - Create the `udacity` PostgreSQL database on the configured host if it does not already exist.
   - Run `flask db upgrade` to create tables from the included migration.
   - Use `flask db migrate` for future schema changes.
 
@@ -37,5 +39,5 @@ This implementation replaces the Fyyur starter project's mock data with a Postgr
 
 ## Assumptions
 - Stand-out features such as recent listings, city/state search, albums/songs, and artist availability are out of scope.
-- Local PostgreSQL availability is assumed; no seed data is included.
+- Network PostgreSQL availability is assumed; no seed data is included.
 - Existing templates remain the public contract for controller data shapes.
